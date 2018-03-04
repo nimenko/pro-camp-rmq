@@ -6,13 +6,15 @@
 
 class BillingManager : public IBillingManager
 {
-    public:
-
-    explicit BillingManager(boost::asio::io_service& svc):svc_(svc) {
+public:
+    explicit BillingManager(boost::asio::io_service& svc) :
+        svc_(svc)
+    {
 
     }
 
-    void connectTo(ICallManager& manager) {
+    void connectTo(ICallManager& manager)
+    {
         manager_ = &manager;
     }
 
@@ -20,7 +22,8 @@ class BillingManager : public IBillingManager
     {
         std::cout << "BillingManager::callStarted(" << phone << ")" << std::endl;
         svc_.post([this, phone](){
-            if(manager_)   manager_->updateBalance(phone, recalculateBalance_(phone, call_duration(0)));
+            if(manager_)
+                manager_->updateBalance(phone, recalculateBalance_(phone, call_duration(0)));
         });
     }
 
@@ -28,18 +31,20 @@ class BillingManager : public IBillingManager
     {
         std::cout << "BillingManager::callEnded(" << phone << ")" << std::endl;
         svc_.post([this, phone, dur](){
-           if(manager_)    manager_->updateBalance(phone, recalculateBalance_(phone, dur));
+            if(manager_)
+                manager_->updateBalance(phone, recalculateBalance_(phone, dur));
         });
     }
 
-    void setBalance(const std::string& phone, const call_duration& balance) {
+    void setBalance(const std::string& phone, const call_duration& balance)
+    {
 
         accounts_[phone] = balance;
     }
 
-    private:
-
-    call_duration recalculateBalance_(const std::string& phone, call_duration dur) {
+private:
+    call_duration recalculateBalance_(const std::string& phone, call_duration dur)
+    {
         auto account = accounts_.find(phone);
         if(account == accounts_.end()){
             return call_duration(0);
